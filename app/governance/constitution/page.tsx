@@ -145,7 +145,7 @@ export default function ConstitutionPage() {
 
 function RenderContent({ content }: { content: SectionContent[] }) {
   return (
-    <div className="space-y-3 text-muted-foreground leading-relaxed break-words">
+    <div className="space-y-3 text-muted-foreground leading-relaxed wrap-break-word">
       {content.map((block, i) => {
         if (block.type === "paragraph") {
           return <p key={i}>{block.text}</p>;
