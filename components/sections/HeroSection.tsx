@@ -92,7 +92,7 @@ export function HeroSection() {
         <div className="hero-eyebrow inline-flex items-center gap-3 mb-10">
           <span className="h-px w-8 bg-oroko-gold" />
           <span className="text-oroko-gold text-xs tracking-[0.35em] uppercase font-medium">
-            Excellence &amp; Global Impact
+            Vision &amp; Impact
           </span>
           <span className="h-px w-8 bg-oroko-gold" />
         </div>
@@ -121,7 +121,7 @@ export function HeroSection() {
           ref={taglineRef}
           className="text-white/60 text-lg sm:text-xl tracking-[0.12em] uppercase font-light mb-12"
         >
-          Unity&nbsp;&nbsp;·Culture&nbsp;&nbsp;·Development
+          Unity&nbsp;&nbsp;Culture&nbsp;&nbsp;Development
         </p>
 
         {/* CTAs */}
