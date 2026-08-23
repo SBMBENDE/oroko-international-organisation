@@ -7,6 +7,7 @@ import Membership from "@/models/Membership";
 import { registerSchema } from "@/lib/validations/auth";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
+import { headers } from "next/headers";
 
 export type ActionResult = {
   success: boolean;
@@ -77,11 +78,13 @@ export async function loginUser(
   callbackUrl?: string
 ): Promise<ActionResult> {
   try {
-    await signIn("credentials", {
-      email,
-      password,
-      redirectTo: callbackUrl ?? "/portal",
-    });
+    // Build an absolute redirectTo so Auth.js never resolves against AUTH_URL
+    const headersList = await headers();
+    const host = headersList.get("host") ?? "localhost:3000";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    const redirectTo = `${protocol}://${host}${callbackUrl ?? "/portal"}`;
+
+    await signIn("credentials", { email, password, redirectTo });
     return { success: true };
   } catch (error) {
     if (error instanceof AuthError) {
@@ -92,11 +95,13 @@ export async function loginUser(
           return { success: false, error: "Authentication failed. Please try again." };
       }
     }
-    // Next.js redirect() throws internally — re-throw to allow the redirect
     throw error;
   }
 }
 
 export async function logoutUser(): Promise<void> {
-  await signOut({ redirectTo: "/" });
+  const headersList = await headers();
+  const host = headersList.get("host") ?? "localhost:3000";
+  const protocol = host.includes("localhost") ? "http" : "https";
+  await signOut({ redirectTo: `${protocol}://${host}/` });
 }

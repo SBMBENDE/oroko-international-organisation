@@ -52,7 +52,7 @@ export function ConstitutionToc({ articles, schedules }: Props) {
   return (
     <>
       {/* Mobile toggle */}
-      <div className="lg:hidden sticky top-26 z-30 bg-white border-b border-border px-4 py-2">
+      <div className="lg:hidden sticky top-20 z-30 bg-white border-b border-border px-4 py-2">
         <button
           onClick={() => setOpen((v) => !v)}
           className="w-full flex items-center justify-between text-sm font-medium text-oroko-black py-1"
@@ -83,7 +83,7 @@ export function ConstitutionToc({ articles, schedules }: Props) {
 
       {/* Desktop sidebar */}
       <nav className="hidden lg:block w-64 shrink-0">
-          <div className="sticky top-26 max-h-[calc(100vh-120px)] overflow-y-auto pr-2 scrollbar-thin">
+          <div className="sticky top-20 max-h-[calc(100vh-88px)] overflow-y-auto pr-2 scrollbar-thin">
           <p className="text-[10px] tracking-[0.2em] uppercase text-oroko-gold font-semibold mb-3 px-2">
             Contents
           </p>

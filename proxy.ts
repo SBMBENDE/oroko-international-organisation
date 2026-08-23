@@ -16,14 +16,17 @@ export const proxy = auth(function proxyHandler(req) {
 
   // Unauthenticated user trying to access protected route
   if (isProtected && !isAuthenticated) {
-    const loginUrl = new URL("/auth/login", req.url);
+    const loginUrl = req.nextUrl.clone();
+    loginUrl.pathname = "/auth/login";
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Authenticated user trying to access login/register
   if (isAuthPage && isAuthenticated) {
-    return NextResponse.redirect(new URL("/portal", req.url));
+    const portalUrl = req.nextUrl.clone();
+    portalUrl.pathname = "/portal";
+    return NextResponse.redirect(portalUrl);
   }
 });
 

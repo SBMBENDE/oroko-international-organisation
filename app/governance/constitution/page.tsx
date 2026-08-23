@@ -38,14 +38,14 @@ export default function ConstitutionPage() {
       </div>
 
       {/* Two-column layout */}
-      <div className="flex gap-10 items-start">
+      <div className="flex gap-8 lg:gap-10 items-start">
         <ConstitutionToc articles={CONSTITUTION.articles} schedules={CONSTITUTION.schedules} />
 
         {/* Main content */}
         <div className="flex-1 min-w-0 space-y-12">
 
           {/* Preamble */}
-          <section id="preamble" className="scroll-mt-32">
+          <section id="preamble" className="scroll-mt-24 lg:scroll-mt-24">
             <div className="flex items-baseline gap-3 mb-6">
               <span className="font-heading text-3xl font-bold text-oroko-black">Preamble</span>
             </div>
@@ -61,20 +61,20 @@ export default function ConstitutionPage() {
 
           {/* Articles */}
           {CONSTITUTION.articles.map((article) => (
-            <section key={article.id} id={article.id} className="scroll-mt-32">
+            <section key={article.id} id={article.id} className="scroll-mt-24">
               <div className="flex items-baseline gap-3 mb-1">
                 <span className="text-xs tracking-[0.25em] uppercase text-oroko-gold font-semibold">
                   Article {article.num}
                 </span>
               </div>
-              <h2 className="font-heading text-2xl lg:text-3xl font-bold text-oroko-black mb-5">
+              <h2 className="font-heading text-2xl sm:text-3xl font-bold text-oroko-black mb-5">
                 {article.title}
               </h2>
               <div className="oroko-divider mb-6" />
 
               <div className="space-y-6">
                 {article.sections.map((section) => (
-                  <div key={section.num} id={`${article.id}-${section.num.replace(".", "-")}`} className="scroll-mt-32">
+                  <div key={section.num} id={`${article.id}-${section.num.replace(".", "-")}`} className="scroll-mt-24">
                     {/* Only render section heading if it has a distinct title from the article */}
                     {section.num !== String(article.num) && (
                       <h3 className="font-heading text-lg font-semibold text-oroko-black mb-2">
@@ -91,7 +91,7 @@ export default function ConstitutionPage() {
 
           {/* Schedules */}
           {CONSTITUTION.schedules.map((schedule) => (
-            <section key={schedule.id} id={schedule.id} className="scroll-mt-32">
+            <section key={schedule.id} id={schedule.id} className="scroll-mt-24">
               <div className="flex items-baseline gap-3 mb-1">
                 <span className="text-xs tracking-[0.25em] uppercase text-oroko-gold font-semibold">
                   {schedule.num}
@@ -106,7 +106,7 @@ export default function ConstitutionPage() {
           ))}
 
           {/* Final Declaration */}
-          <section id="final-declaration" className="scroll-mt-32">
+          <section id="final-declaration" className="scroll-mt-24">
             <h2 className="font-heading text-2xl lg:text-3xl font-bold text-oroko-black mb-5">
               Final Declaration
             </h2>
@@ -145,7 +145,7 @@ export default function ConstitutionPage() {
 
 function RenderContent({ content }: { content: SectionContent[] }) {
   return (
-    <div className="space-y-3 text-muted-foreground leading-relaxed">
+    <div className="space-y-3 text-muted-foreground leading-relaxed break-words">
       {content.map((block, i) => {
         if (block.type === "paragraph") {
           return <p key={i}>{block.text}</p>;
