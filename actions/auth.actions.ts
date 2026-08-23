@@ -78,11 +78,12 @@ export async function loginUser(
   callbackUrl?: string
 ): Promise<ActionResult> {
   try {
-    // Build an absolute redirectTo so Auth.js never resolves against AUTH_URL
     const headersList = await headers();
-    const host = headersList.get("host") ?? "localhost:3000";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    const redirectTo = `${protocol}://${host}${callbackUrl ?? "/portal"}`;
+    // x-forwarded-host is the real domain on Vercel; avoids AUTH_URL normalization
+    const fwdHost = headersList.get("x-forwarded-host");
+    const host = fwdHost ?? headersList.get("host") ?? "localhost:3000";
+    const proto = host.includes("localhost") ? "http" : "https";
+    const redirectTo = `${proto}://${host}${callbackUrl ?? "/portal"}`;
 
     await signIn("credentials", { email, password, redirectTo });
     return { success: true };
@@ -101,7 +102,8 @@ export async function loginUser(
 
 export async function logoutUser(): Promise<void> {
   const headersList = await headers();
-  const host = headersList.get("host") ?? "localhost:3000";
-  const protocol = host.includes("localhost") ? "http" : "https";
-  await signOut({ redirectTo: `${protocol}://${host}/` });
+  const fwdHost = headersList.get("x-forwarded-host");
+  const host = fwdHost ?? headersList.get("host") ?? "localhost:3000";
+  const proto = host.includes("localhost") ? "http" : "https";
+  await signOut({ redirectTo: `${proto}://${host}/` });
 }

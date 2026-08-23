@@ -14,19 +14,21 @@ export const proxy = auth(function proxyHandler(req) {
   const isProtected = PROTECTED_PATHS.some((p) => pathname.startsWith(p));
   const isAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p));
 
-  // Unauthenticated user trying to access protected route
+  // Use x-forwarded-host (set by Vercel/CDN) to get the real domain, never
+  // rely on req.nextUrl which Auth.js may normalise against AUTH_URL env var
+  const fwdHost = req.headers.get("x-forwarded-host");
+  const host = fwdHost ?? req.headers.get("host") ?? "localhost:3000";
+  const proto = host.includes("localhost") ? "http" : "https";
+  const base = `${proto}://${host}`;
+
   if (isProtected && !isAuthenticated) {
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = "/auth/login";
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(
+      `${base}/auth/login?callbackUrl=${encodeURIComponent(pathname)}`
+    );
   }
 
-  // Authenticated user trying to access login/register
   if (isAuthPage && isAuthenticated) {
-    const portalUrl = req.nextUrl.clone();
-    portalUrl.pathname = "/portal";
-    return NextResponse.redirect(portalUrl);
+    return NextResponse.redirect(`${base}/portal`);
   }
 });
 
