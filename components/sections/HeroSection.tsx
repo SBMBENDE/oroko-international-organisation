@@ -121,7 +121,7 @@ export function HeroSection() {
           ref={taglineRef}
           className="text-white/60 text-lg sm:text-xl tracking-[0.12em] uppercase font-light mb-12"
         >
-          Unity&nbsp;&nbsp;·&nbsp;&nbsp;Culture&nbsp;&nbsp;·&nbsp;&nbsp;Development
+          Unity&nbsp;&nbsp;·Culture&nbsp;&nbsp;·Development
         </p>
 
         {/* CTAs */}
