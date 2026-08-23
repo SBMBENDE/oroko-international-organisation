@@ -179,7 +179,7 @@ function MobileToc({
   const current = items.find((i) => i.id === openId)?.label ?? "Preamble";
 
   return (
-    <div className="lg:hidden absolute left-0 right-0 sticky top-20 z-30 bg-white border-b border-border px-4 py-2 -mx-4 sm:-mx-6">
+    <div className="lg:hidden sticky top-20 left-0 right-0 z-30 bg-white border-b border-border px-4 py-2 -mx-4 sm:-mx-6">
       <button
         onClick={() => setDropOpen((v) => !v)}
         className="w-full flex items-center justify-between text-sm font-medium text-oroko-black py-1"
