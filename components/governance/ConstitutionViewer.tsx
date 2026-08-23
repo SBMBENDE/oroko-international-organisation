@@ -43,8 +43,14 @@ export function ConstitutionViewer() {
   ];
 
   return (
-    <div className="flex gap-8 lg:gap-10 items-start">
-      {/* Desktop TOC sidebar */}
+    <div>
+      {/* Mobile TOC — stacks above accordion; outside the flex row so it never sits beside content */}
+      <div className="lg:hidden mb-4">
+        <MobileToc items={allItems} openId={openId} onOpen={open} />
+      </div>
+
+      <div className="flex gap-8 lg:gap-10 items-start">
+        {/* Desktop TOC sidebar */}
       <nav className="hidden lg:block w-60 shrink-0 sticky top-20 max-h-[calc(100vh-88px)] overflow-y-auto pr-2">
         <p className="text-[10px] tracking-[0.2em] uppercase text-oroko-gold font-semibold mb-3 px-2">
           Contents
@@ -68,8 +74,7 @@ export function ConstitutionViewer() {
         </ul>
       </nav>
 
-      {/* Mobile TOC dropdown */}
-      <MobileToc items={allItems} openId={openId} onOpen={open} />
+      {/* Mobile TOC dropdown rendered above — removed from flex row */}
 
       {/* Accordion content */}
       <div className="flex-1 min-w-0 space-y-3">
@@ -160,6 +165,7 @@ export function ConstitutionViewer() {
           </div>
         </AccordionItem>
       </div>
+    </div>
     </div>
   );
 }
