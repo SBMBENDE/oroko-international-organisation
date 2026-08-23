@@ -5,6 +5,7 @@ import { MeetingCard } from "@/components/governance/MeetingCard";
 import { DocumentCard } from "@/components/governance/DocumentCard";
 import { Scale, ArrowLeft, Users, FileText } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "General Assembly" };
 
 export default async function AssemblyPage() {

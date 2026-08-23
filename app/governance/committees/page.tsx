@@ -4,6 +4,7 @@ import { getCommittees } from "@/lib/dal/governance";
 import { CommitteeCard } from "@/components/governance/CommitteeCard";
 import { Users, ArrowLeft } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Committees" };
 
 export default async function CommitteesPage() {

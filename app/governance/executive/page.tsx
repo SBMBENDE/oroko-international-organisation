@@ -4,6 +4,7 @@ import { OfficerCard } from "@/components/governance/OfficerCard";
 import { getExecutiveOfficers } from "@/lib/dal/governance";
 import { Building2, ArrowLeft } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Executive Council" };
 
 export default async function ExecutivePage() {

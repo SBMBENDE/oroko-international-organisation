@@ -3,6 +3,7 @@ import { getAllPublicProjects } from "@/lib/dal/projects";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { Layers } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Projects" };
 
 const STATUSES = ["active", "planned", "completed", "on_hold"] as const;

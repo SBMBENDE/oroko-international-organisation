@@ -3,6 +3,7 @@ import { getUpcomingEvents, getPastEvents } from "@/lib/dal/events";
 import { EventCard } from "@/components/events/EventCard";
 import { CalendarDays } from "lucide-react";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Events" };
 
 export default async function EventsPage() {

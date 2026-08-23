@@ -8,6 +8,7 @@ import { DirectorySearch } from "@/components/members/DirectorySearch";
 import { Users, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Member Directory" };
 
 type SearchParams = Promise<{ q?: string; country?: string; page?: string }>;
