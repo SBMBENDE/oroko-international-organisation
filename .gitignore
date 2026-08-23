@@ -23,6 +23,7 @@
 # misc
 .DS_Store
 *.pem
+Thumbs.db
 
 # debug
 npm-debug.log*
@@ -30,8 +31,16 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — local overrides with real secrets, never commit these
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+# commit .env.example (template) but ignore everything else
+.env
+.env.production
+.env.development
 
 # vercel
 .vercel
@@ -39,3 +48,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# stripe cli
+.stripe
+
+# editor
+.idea/
+.vscode/settings.json
