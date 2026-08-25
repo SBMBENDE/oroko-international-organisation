@@ -86,6 +86,14 @@ export function Footer() {
             >
               Terms of Use
             </Link>
+            <a
+              href="https://portfolio-2026-nine-weld.vercel.app/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-oroko-gold hover:text-white/60 text-xs tracking-wider transition-colors"
+            >
+              Contact Developer
+            </a>
           </div>
         </div>
       </div>
