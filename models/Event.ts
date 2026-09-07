@@ -141,7 +141,6 @@ EventSchema.pre("save", function () {
 });
 
 EventSchema.index({ status: 1, startDate: 1 });
-EventSchema.index({ slug: 1 });
 EventSchema.index({ isFeatured: 1, status: 1 });
 
 const Event: Model<IEvent> =

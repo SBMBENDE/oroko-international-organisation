@@ -8,7 +8,13 @@ export type DocumentType =
   | "report"
   | "agenda"
   | "statute"
-  | "bylaw";
+  | "bylaw"
+  | "constitution"
+  | "policy"
+  | "form"
+  | "financial"
+  | "committee_document"
+  | "other";
 
 export interface IGovernanceDocument extends Document {
   organ: GovernanceOrgan;
@@ -20,6 +26,8 @@ export interface IGovernanceDocument extends Document {
   summary?: string;
   content?: string;
   attachmentUrl?: string;
+  version: number;
+  previousVersions: { attachmentUrl: string; version: number; replacedAt: Date }[];
   adoptedAt?: Date;
   isPublic: boolean;
   createdAt: Date;
@@ -37,7 +45,7 @@ const GovernanceDocumentSchema = new Schema<IGovernanceDocument>(
     meeting: { type: Schema.Types.ObjectId, ref: "GovernanceMeeting" },
     type: {
       type: String,
-      enum: ["resolution", "decision", "minutes", "report", "agenda", "statute", "bylaw"],
+      enum: ["resolution", "decision", "minutes", "report", "agenda", "statute", "bylaw", "constitution", "policy", "form", "financial", "committee_document", "other"],
       required: true,
     },
     title: { type: String, required: true, trim: true },
@@ -45,6 +53,15 @@ const GovernanceDocumentSchema = new Schema<IGovernanceDocument>(
     summary: { type: String, trim: true },
     content: { type: String },
     attachmentUrl: { type: String, trim: true },
+    version: { type: Number, default: 1 },
+    previousVersions: [
+      {
+        attachmentUrl: { type: String, required: true },
+        version: { type: Number, required: true },
+        replacedAt: { type: Date, default: Date.now },
+        _id: false,
+      },
+    ],
     adoptedAt: { type: Date },
     isPublic: { type: Boolean, default: false },
   },

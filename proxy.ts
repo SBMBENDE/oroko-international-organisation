@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 const { auth } = NextAuth(authConfig);
 
-const PROTECTED_PATHS = ["/portal", "/members"];
+const PROTECTED_PATHS = ["/portal", "/members", "/admin"];
 const AUTH_PAGES = ["/auth/login", "/auth/register"];
 
 export const proxy = auth(function proxyHandler(req) {

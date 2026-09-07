@@ -15,7 +15,8 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/portal";
+  // Leave undefined when there's no explicit redirect target so the server can route by role (admin -> /admin)
+  const callbackUrl = searchParams.get("callbackUrl") ?? undefined;
 
   const {
     register,

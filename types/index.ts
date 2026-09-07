@@ -18,9 +18,26 @@ export type OrokoStat = {
 };
 
 // Auth / membership types
-export type UserRole = "member" | "admin" | "superadmin";
-export type MembershipStatus = "pending" | "active" | "suspended" | "expired";
-export type MembershipType = "regular" | "associate" | "honorary" | "founding";
+export type UserRole =
+  | "member"
+  | "superadmin"
+  | "admin"
+  | "membership_admin"
+  | "finance_admin"
+  | "event_admin"
+  | "project_admin"
+  | "welfare_admin"
+  | "content_admin"
+  | "viewer";
+export type MembershipStatus =
+  | "pending"
+  | "active"
+  | "suspended"
+  | "expired"
+  | "rejected"
+  | "resigned";
+// Membership type is now free-form and configurable — see models/MembershipType.ts
+export type MembershipType = string;
 
 // Governance types
 export type GovernanceOrgan = "general_assembly" | "executive" | "committee";

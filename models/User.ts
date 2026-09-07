@@ -1,5 +1,30 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+// Single role field drives RBAC — see lib/permissions.ts for the permission map.
+export type AdminRole =
+  | "member"
+  | "superadmin"
+  | "admin"
+  | "membership_admin"
+  | "finance_admin"
+  | "event_admin"
+  | "project_admin"
+  | "welfare_admin"
+  | "content_admin"
+  | "viewer";
+
+export const ADMIN_ROLES: AdminRole[] = [
+  "superadmin",
+  "admin",
+  "membership_admin",
+  "finance_admin",
+  "event_admin",
+  "project_admin",
+  "welfare_admin",
+  "content_admin",
+  "viewer",
+];
+
 export interface IPrivacySettings {
   showEmail: boolean;
   showPhone: boolean;
@@ -14,8 +39,8 @@ export interface IUser extends Document {
   lastName: string;
   email: string;
   password: string;
-  role: "member" | "admin" | "superadmin";
-  membershipStatus: "pending" | "active" | "suspended" | "expired";
+  role: AdminRole;
+  membershipStatus: "pending" | "active" | "suspended" | "expired" | "rejected" | "resigned";
   isEmailVerified: boolean;
   isActive: boolean;
   // Profile (Phase 3)
@@ -80,12 +105,23 @@ const UserSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      enum: ["member", "admin", "superadmin"],
+      enum: [
+        "member",
+        "superadmin",
+        "admin",
+        "membership_admin",
+        "finance_admin",
+        "event_admin",
+        "project_admin",
+        "welfare_admin",
+        "content_admin",
+        "viewer",
+      ],
       default: "member",
     },
     membershipStatus: {
       type: String,
-      enum: ["pending", "active", "suspended", "expired"],
+      enum: ["pending", "active", "suspended", "expired", "rejected", "resigned"],
       default: "pending",
     },
     isEmailVerified: { type: Boolean, default: false },

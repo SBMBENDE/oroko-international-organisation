@@ -4,8 +4,8 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      role: "member" | "admin" | "superadmin";
-      membershipStatus: "pending" | "active" | "suspended" | "expired";
+      role: import("@/types").UserRole;
+      membershipStatus: import("@/types").MembershipStatus;
     } & DefaultSession["user"];
   }
 

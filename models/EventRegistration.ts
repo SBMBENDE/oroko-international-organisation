@@ -59,7 +59,6 @@ EventRegistrationSchema.pre("save", function () {
 
 EventRegistrationSchema.index({ event: 1, attendeeEmail: 1 });
 EventRegistrationSchema.index({ user: 1 });
-EventRegistrationSchema.index({ registrationCode: 1 });
 EventRegistrationSchema.index({ status: 1 });
 
 const EventRegistration: Model<IEventRegistration> =

@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import Membership from "@/models/Membership";
 import { registerSchema } from "@/lib/validations/auth";
+import { isAdminRole } from "@/lib/permissions";
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { headers } from "next/headers";
@@ -83,7 +84,16 @@ export async function loginUser(
     const fwdHost = headersList.get("x-forwarded-host");
     const host = fwdHost ?? headersList.get("host") ?? "localhost:3000";
     const proto = host.includes("localhost") ? "http" : "https";
-    const redirectTo = `${proto}://${host}${callbackUrl ?? "/portal"}`;
+
+    // No explicit destination requested (e.g. visiting /auth/login directly) — route admins to the dashboard
+    let destination = callbackUrl;
+    if (!destination) {
+      await connectDB();
+      const account = await User.findOne({ email: email.toLowerCase() }).select("role");
+      destination = account && isAdminRole(account.role) ? "/admin" : "/portal";
+    }
+
+    const redirectTo = `${proto}://${host}${destination}`;
 
     await signIn("credentials", { email, password, redirectTo });
     return { success: true };

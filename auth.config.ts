@@ -26,8 +26,8 @@ export const authConfig: NextAuthConfig = {
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
-        session.user.role = (token.role ?? "member") as "member" | "admin" | "superadmin";
-        session.user.membershipStatus = (token.membershipStatus ?? "pending") as "pending" | "active" | "suspended" | "expired";
+        session.user.role = (token.role ?? "member") as import("@/types").UserRole;
+        session.user.membershipStatus = (token.membershipStatus ?? "pending") as import("@/types").MembershipStatus;
       }
       return session;
     },

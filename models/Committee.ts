@@ -34,7 +34,6 @@ CommitteeSchema.pre("save", function () {
   }
 });
 
-CommitteeSchema.index({ slug: 1 });
 CommitteeSchema.index({ isActive: 1, order: 1 });
 
 const Committee: Model<ICommittee> =

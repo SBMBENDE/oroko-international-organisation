@@ -112,7 +112,6 @@ ProjectSchema.pre("save", function () {
 });
 
 ProjectSchema.index({ status: 1, isPublic: 1 });
-ProjectSchema.index({ slug: 1 });
 ProjectSchema.index({ isFeatured: 1 });
 ProjectSchema.index({ category: 1 });
 
