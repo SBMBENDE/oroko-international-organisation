@@ -39,10 +39,10 @@ export function Footer() {
             <Logo variant="light" size="md" />
             <p className="text-white/50 text-sm leading-relaxed max-w-xs">
               A premier international organization dedicated to unity,
-              excellence, and global impact across our community.
+               development, and global impact across the Oroko community.
             </p>
             <p className="text-oroko-gold text-xs tracking-[0.2em] uppercase font-medium">
-              Unity · Excellence · Global Impact
+              Unity · Development · Global Impact
             </p>
           </div>
 
