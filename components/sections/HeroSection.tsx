@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, Heart } from "lucide-react";
 
 gsap.registerPlugin();
 
@@ -141,6 +141,13 @@ export function HeroSection() {
             className="inline-flex items-center gap-2.5 px-8 py-4 border border-white/25 text-white text-xs tracking-[0.2em] uppercase font-medium hover:border-white/60 hover:bg-white/5 transition-all duration-300 rounded-sm"
           >
             Discover OROKO
+          </Link>
+          <Link
+            href="/donate"
+            className="group inline-flex items-center gap-2 px-6 py-4 text-oroko-gold text-xs tracking-[0.2em] uppercase font-semibold hover:text-oroko-gold-light transition-colors duration-300"
+          >
+            <Heart className="size-3.5 group-hover:scale-110 transition-transform" />
+            Donate
           </Link>
         </div>
       </div>

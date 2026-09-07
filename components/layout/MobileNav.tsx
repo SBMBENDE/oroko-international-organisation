@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
+import { X, Heart } from "lucide-react";
 import { Logo } from "@/components/common/Logo";
 import { cn } from "@/lib/utils";
 import type { NavLink } from "@/types";
@@ -53,6 +53,21 @@ export function MobileNav({ links, open, onClose }: MobileNavProps) {
         {/* Nav links */}
         <nav className="flex-1 overflow-y-auto px-6 py-8">
           <ul className="space-y-1">
+            <li>
+              <Link
+                href="/donate"
+                onClick={onClose}
+                className={cn(
+                  "flex items-center gap-2 py-3.5 px-4 rounded-sm text-sm tracking-[0.12em] uppercase font-medium transition-colors duration-200",
+                  pathname === "/donate"
+                    ? "bg-oroko-gold/10 text-oroko-gold border-l-2 border-oroko-gold pl-3"
+                    : "text-oroko-gold hover:bg-white/5"
+                )}
+              >
+                <Heart className="size-4" />
+                Donate
+              </Link>
+            </li>
             {links.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -86,16 +101,24 @@ export function MobileNav({ links, open, onClose }: MobileNavProps) {
         {/* Footer CTAs */}
         <div className="px-6 py-6 border-t border-oroko-gold/10 space-y-3">
           <Link
+            href="/donate"
+            onClick={onClose}
+            className="flex items-center justify-center gap-2 text-center text-xs tracking-[0.15em] uppercase font-semibold px-5 py-3 bg-oroko-gold text-oroko-black hover:bg-oroko-gold-light transition-colors duration-200 rounded-sm"
+          >
+            <Heart className="size-3.5" />
+            Donate Now
+          </Link>
+          <Link
             href="/auth/register"
             onClick={onClose}
-            className="block text-center text-xs tracking-[0.15em] uppercase font-semibold px-5 py-3 bg-oroko-gold text-oroko-black hover:bg-oroko-gold-light transition-colors duration-200 rounded-sm"
+            className="block text-center text-xs tracking-[0.15em] uppercase font-medium px-5 py-3 border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition-colors duration-200 rounded-sm"
           >
             Join Us
           </Link>
           <Link
             href="/auth/login"
             onClick={onClose}
-            className="block text-center text-xs tracking-[0.15em] uppercase font-medium px-5 py-3 border border-white/20 text-white/70 hover:text-white hover:border-white/40 transition-colors duration-200 rounded-sm"
+            className="block text-center text-xs tracking-[0.15em] uppercase font-medium text-white/50 hover:text-white transition-colors duration-200"
           >
             Sign In
           </Link>
