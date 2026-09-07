@@ -19,7 +19,7 @@ export function AboutSection() {
                   &ldquo;
                 </div>
                 <blockquote className="font-heading text-white text-xl lg:text-2xl leading-relaxed italic font-light">
-                  An organization built on the pillars of unity, excellence,
+                  An organization built on the pillars of unity, development,
                   and service — connecting individuals who share a commitment
                   to collective progress.
                 </blockquote>
@@ -37,9 +37,9 @@ export function AboutSection() {
             {/* Stat chips */}
             <div className="flex gap-4 mt-8">
               {[
-                { n: "500+", label: "Members" },
+                { n: "60+", label: "Members" },
                 { n: "15+", label: "Countries" },
-                { n: "10+", label: "Years" },
+                { n: "1+", label: "Years" },
               ].map(({ n, label }) => (
                 <div
                   key={label}
@@ -79,7 +79,7 @@ export function AboutSection() {
 
             <p className="text-muted-foreground leading-relaxed">
               Through robust governance, impactful events, meaningful projects,
-              and a strong member community, OROKO creates lasting connections
+              and a strong member community, OROKO International creates lasting connections
               and drives collective progress at the international level.
             </p>
 
