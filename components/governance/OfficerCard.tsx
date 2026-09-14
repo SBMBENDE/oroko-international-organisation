@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { ShieldCheck } from "lucide-react";
 import type { OfficerProfile } from "@/lib/dal/governance";
 
 export function OfficerCard({ officer }: { officer: OfficerProfile }) {

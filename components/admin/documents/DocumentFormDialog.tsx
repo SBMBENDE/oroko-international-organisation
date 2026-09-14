@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,14 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger,
 } from "@/components/ui/dialog";
 import { uploadDocument } from "@/actions/admin/documents.actions";
-import { Plus } from "lucide-react";
+import { Plus, UploadCloud } from "lucide-react";
+
+// Called by CldUploadWidget — extract URL from whichever result shape arrives
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractUploadUrl(result: any): string | undefined {
+  const info = result?.info ?? result;
+  return typeof info === "object" ? info?.secure_url : undefined;
+}
 
 const TYPES = ["constitution", "bylaw", "policy", "report", "minutes", "form", "financial", "committee_document", "resolution", "decision", "agenda", "statute", "other"];
 
@@ -27,6 +35,7 @@ export function DocumentFormDialog() {
   const [isPublic, setIsPublic] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -68,7 +77,26 @@ export function DocumentFormDialog() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="d-url">File URL</Label>
-            <Input id="d-url" value={attachmentUrl} onChange={(e) => setAttachmentUrl(e.target.value)} placeholder="https://…" required />
+            <div className="flex gap-2">
+              <Input id="d-url" value={attachmentUrl} onChange={(e) => setAttachmentUrl(e.target.value)} placeholder="https://…" required className="flex-1" />
+              {cloudName && (
+                <CldUploadWidget
+                  uploadPreset="oroko_documents"
+                  options={{ maxFiles: 1, resourceType: "auto" }}
+                  onSuccess={(result) => {
+                    const url = extractUploadUrl(result);
+                    if (url) setAttachmentUrl(url);
+                  }}
+                >
+                  {({ open }) => (
+                    <Button type="button" variant="outline" size="icon" onClick={() => open()} aria-label="Upload file to Cloudinary">
+                      <UploadCloud className="size-4" />
+                    </Button>
+                  )}
+                </CldUploadWidget>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">Upload a PDF/file or paste an already-hosted link.</p>
           </div>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} className="size-4 accent-oroko-gold" />

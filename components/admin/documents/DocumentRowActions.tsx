@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CldUploadWidget } from "next-cloudinary";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
@@ -9,6 +10,14 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { toggleDocumentPublished, deleteDocument, replaceDocumentVersion } from "@/actions/admin/documents.actions";
+import { UploadCloud } from "lucide-react";
+
+// Called by CldUploadWidget — extract URL from whichever result shape arrives
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractUploadUrl(result: any): string | undefined {
+  const info = result?.info ?? result;
+  return typeof info === "object" ? info?.secure_url : undefined;
+}
 
 export function DocumentRowActions({ id, isPublic }: { id: string; isPublic: boolean }) {
   const router = useRouter();
@@ -16,6 +25,7 @@ export function DocumentRowActions({ id, isPublic }: { id: string; isPublic: boo
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
   const refresh = () => router.refresh();
 
   async function handleReplace() {
@@ -45,6 +55,22 @@ export function DocumentRowActions({ id, isPublic }: { id: string; isPublic: boo
             <DialogDescription>The previous file remains accessible in version history.</DialogDescription>
           </DialogHeader>
           <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="New file URL" />
+          {cloudName && (
+            <CldUploadWidget
+              uploadPreset="oroko_documents"
+              options={{ maxFiles: 1, resourceType: "auto" }}
+              onSuccess={(result) => {
+                const newUrl = extractUploadUrl(result);
+                if (newUrl) setUrl(newUrl);
+              }}
+            >
+              {({ open }) => (
+                <Button type="button" variant="outline" size="sm" onClick={() => open()}>
+                  <UploadCloud className="size-4" /> Upload new file
+                </Button>
+              )}
+            </CldUploadWidget>
+          )}
           {error && <p className="text-sm text-destructive">{error}</p>}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setReplaceOpen(false)} disabled={isSubmitting}>Cancel</Button>
