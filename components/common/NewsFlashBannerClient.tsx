@@ -1,22 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Zap, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Zap } from "lucide-react";
 
 export type ActiveNewsFlash = { id: string; title: string; message: string };
 
-const DISMISSED_KEY = "newsflash-ticker-dismissed";
-
 // Pushes content below the fixed Navbar since this sits outside <main>'s flow
 export function NewsFlashBannerClient({ flashes }: { flashes: ActiveNewsFlash[] }) {
-  const [dismissed, setDismissed] = useState(false);
   const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    // sessionStorage isn't available during SSR, so this can only be checked after mount
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (sessionStorage.getItem(DISMISSED_KEY)) setDismissed(true);
-  }, []);
 
   // One continuous ticker so every flash is fully readable, no truncation
   const plainLength = useMemo(
@@ -35,12 +26,7 @@ export function NewsFlashBannerClient({ flashes }: { flashes: ActiveNewsFlash[] 
     ));
   }
 
-  if (dismissed || flashes.length === 0) return null;
-
-  function dismiss() {
-    sessionStorage.setItem(DISMISSED_KEY, "1");
-    setDismissed(true);
-  }
+  if (flashes.length === 0) return null;
 
   return (
     <div
@@ -65,15 +51,6 @@ export function NewsFlashBannerClient({ flashes }: { flashes: ActiveNewsFlash[] 
             <span aria-hidden className="flex">{renderTrack("b")}</span>
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); dismiss(); }}
-          aria-label="Dismiss"
-          className="shrink-0 hover:opacity-70 transition-opacity"
-        >
-          <X className="size-4" />
-        </button>
       </div>
     </div>
   );
