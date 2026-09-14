@@ -20,14 +20,14 @@ const navLinks: NavLink[] = [
   { label: "Contact", href: "/contact" },
 ];
 
-export function Navbar() {
+export function Navbar({ forceSolid = false }: { forceSolid?: boolean }) {
   const scrolled = useScrolled(40);
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // Transparent hero navbar only on the homepage; everywhere else show solid immediately
   const isHomepage = pathname === "/";
-  const solid = scrolled || !isHomepage;
+  const solid = scrolled || !isHomepage || forceSolid;
 
   return (
     <>

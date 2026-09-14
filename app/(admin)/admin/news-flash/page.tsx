@@ -30,6 +30,7 @@ export default async function NewsFlashPage() {
             <th>Message</th>
             <th>Author</th>
             <th>Status</th>
+            <th>Expires</th>
             <th>Date</th>
             <th />
           </AdminTableHead>
@@ -40,8 +41,26 @@ export default async function NewsFlashPage() {
                 <td className="text-muted-foreground max-w-xs truncate">{n.message}</td>
                 <td>{n.authorName}</td>
                 <td><StatusBadge status={n.status} /></td>
+                <td className="text-muted-foreground">
+                  {n.expiresAt
+                    ? new Date(n.expiresAt) < new Date()
+                      ? "Expired"
+                      : new Date(n.expiresAt).toLocaleDateString()
+                    : "No expiry"}
+                </td>
                 <td className="text-muted-foreground">{new Date(n.createdAt).toLocaleDateString()}</td>
-                <td><NewsFlashRowActions id={n._id.toString()} status={n.status} /></td>
+                <td>
+                  <NewsFlashRowActions
+                    flash={{
+                      id: n._id.toString(),
+                      title: n.title,
+                      message: n.message,
+                      image: n.image,
+                      expiresAt: n.expiresAt?.toISOString(),
+                      status: n.status,
+                    }}
+                  />
+                </td>
               </AdminTableRow>
             ))}
           </tbody>

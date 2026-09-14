@@ -4,13 +4,16 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ConfirmButton } from "@/components/admin/ConfirmButton";
 import { setNewsFlashStatus, deleteNewsFlash } from "@/actions/admin/newsflash.actions";
+import { NewsFlashFormDialog, type NewsFlashFormInitial } from "@/components/admin/newsflash/NewsFlashFormDialog";
 
-export function NewsFlashRowActions({ id, status }: { id: string; status: string }) {
+export function NewsFlashRowActions({ flash }: { flash: NewsFlashFormInitial & { status: string } }) {
   const router = useRouter();
   const refresh = () => router.refresh();
+  const { id, status } = flash;
 
   return (
     <div className="flex justify-end gap-2">
+      <NewsFlashFormDialog flash={flash} trigger={<Button size="xs" variant="outline">Edit</Button>} />
       {status === "draft" ? (
         <Button size="xs" onClick={async () => { await setNewsFlashStatus(id, "published"); refresh(); }}>Publish</Button>
       ) : (

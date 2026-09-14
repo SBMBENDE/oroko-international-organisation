@@ -10,6 +10,7 @@ export interface INewsFlash extends Document {
   authorName: string;
   status: NewsFlashStatus;
   publishAt?: Date;
+  expiresAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,6 +24,7 @@ const NewsFlashSchema = new Schema<INewsFlash>(
     authorName: { type: String, required: true, trim: true },
     status: { type: String, enum: ["draft", "published", "scheduled"], default: "draft" },
     publishAt: { type: Date },
+    expiresAt: { type: Date },
   },
   { timestamps: true }
 );
