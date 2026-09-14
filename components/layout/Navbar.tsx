@@ -33,13 +33,13 @@ export function Navbar({ forceSolid = false }: { forceSolid?: boolean }) {
     <>
       <header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+          "fixed top-0 left-0 right-0 z-50 flex items-center transition-all duration-500",
           solid
-            ? "bg-oroko-black/95 backdrop-blur-md border-b border-oroko-gold/10 py-3"
-            : "bg-transparent py-5"
+            ? "h-16 bg-oroko-black/95 backdrop-blur-md border-b border-oroko-gold/10"
+            : "h-20 bg-transparent"
         )}
       >
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <nav className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
           <Logo variant="light" size="md" />
 
           {/* Desktop nav links */}

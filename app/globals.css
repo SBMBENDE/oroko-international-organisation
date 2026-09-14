@@ -199,4 +199,22 @@
       oklch(0.67 0.115 71 / 0.03) 21px
     );
   }
+  .animate-marquee {
+    animation: marquee var(--marquee-duration, 25s) linear infinite;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
 }

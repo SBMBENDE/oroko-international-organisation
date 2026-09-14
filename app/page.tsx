@@ -9,12 +9,14 @@ import { CTASection } from "@/components/sections/CTASection";
 
 export default async function HomePage() {
   const flashes = await getActiveNewsFlashes();
+  const hasFlash = flashes.length > 0;
 
   return (
     <>
-      <Navbar forceSolid={flashes.length > 0} />
-      {flashes.length > 0 && <NewsFlashBannerClient flashes={flashes} />}
-      <main className="flex-1">
+      <Navbar forceSolid={hasFlash} />
+      {hasFlash && <NewsFlashBannerClient flashes={flashes} />}
+      {/* Hero normally sits under the transparent nav; with the flash banner fixed above it, push content below both */}
+      <main className={hasFlash ? "flex-1 pt-26" : "flex-1"}>
         <HeroSection />
         <AboutSection />
         <PillarsSection />

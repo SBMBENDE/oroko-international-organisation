@@ -1,108 +1,74 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Zap, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Zap, X } from "lucide-react";
 
 export type ActiveNewsFlash = { id: string; title: string; message: string };
 
-const ROTATE_MS = 6000;
-const DISMISSED_KEY = "newsflash-dismissed";
-
-function readDismissed(): string[] {
-  try {
-    return JSON.parse(sessionStorage.getItem(DISMISSED_KEY) ?? "[]");
-  } catch {
-    return [];
-  }
-}
+const DISMISSED_KEY = "newsflash-ticker-dismissed";
 
 // Pushes content below the fixed Navbar since this sits outside <main>'s flow
 export function NewsFlashBannerClient({ flashes }: { flashes: ActiveNewsFlash[] }) {
-  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
-  const [index, setIndex] = useState(0);
+  const [dismissed, setDismissed] = useState(false);
   const [paused, setPaused] = useState(false);
 
-  useEffect(() => setDismissedIds(readDismissed()), []);
+  useEffect(() => {
+    // sessionStorage isn't available during SSR, so this can only be checked after mount
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (sessionStorage.getItem(DISMISSED_KEY)) setDismissed(true);
+  }, []);
 
-  const visible = useMemo(
-    () => flashes.filter((f) => !dismissedIds.includes(f.id)),
-    [flashes, dismissedIds]
+  // One continuous ticker so every flash is fully readable, no truncation
+  const plainLength = useMemo(
+    () => flashes.reduce((sum, f) => sum + f.title.length + f.message.length, 0),
+    [flashes]
   );
+  // Longer content scrolls a bit slower so reading speed stays roughly constant
+  const durationSeconds = Math.max(18, Math.round(plainLength * 0.2));
 
-  useEffect(() => {
-    if (index >= visible.length) setIndex(0);
-  }, [visible.length, index]);
+  function renderTrack(copy: "a" | "b") {
+    return flashes.map((f) => (
+      <span key={`${copy}-${f.id}`} className="text-xs sm:text-sm pr-2">
+        <span className="font-semibold">{f.title}</span> — {f.message}
+        <span className="px-3 opacity-50">•</span>
+      </span>
+    ));
+  }
 
-  useEffect(() => {
-    if (visible.length <= 1 || paused) return;
-    const timer = setInterval(() => setIndex((i) => (i + 1) % visible.length), ROTATE_MS);
-    return () => clearInterval(timer);
-  }, [visible.length, paused]);
+  if (dismissed || flashes.length === 0) return null;
 
-  if (visible.length === 0) return null;
-  const current = visible[index];
-
-  function dismissCurrent() {
-    const next = [...readDismissed(), current.id];
-    sessionStorage.setItem(DISMISSED_KEY, JSON.stringify(next));
-    setDismissedIds(next);
+  function dismiss() {
+    sessionStorage.setItem(DISMISSED_KEY, "1");
+    setDismissed(true);
   }
 
   return (
     <div
-      className="relative z-10 mt-20 sm:mt-24 bg-oroko-gold text-oroko-black"
+      className="fixed top-16 inset-x-0 z-40 h-10 flex items-center bg-oroko-gold text-oroko-black overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onClick={() => setPaused((p) => !p)}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center gap-2 sm:gap-3">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 sm:gap-3">
         <span className="relative flex size-4 shrink-0 items-center justify-center">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-oroko-black/40" />
           <Zap className="relative size-4 animate-pulse" strokeWidth={2.5} />
         </span>
+        <span className="shrink-0 text-xs sm:text-sm font-bold uppercase tracking-wide">Flash</span>
 
-        {visible.length > 1 && (
-          <button
-            type="button"
-            onClick={() => setIndex((i) => (i - 1 + visible.length) % visible.length)}
-            aria-label="Previous update"
-            className="hidden sm:block shrink-0 hover:opacity-70 transition-opacity"
+        <div className="relative flex-1 min-w-0 overflow-hidden">
+          <div
+            className="flex w-max whitespace-nowrap animate-marquee"
+            style={{ "--marquee-duration": `${durationSeconds}s`, animationPlayState: paused ? "paused" : "running" } as React.CSSProperties}
           >
-            <ChevronLeft className="size-4" />
-          </button>
-        )}
-
-        <p key={current.id} className="text-xs sm:text-sm flex-1 min-w-0 truncate">
-          <span className="font-bold uppercase tracking-wide mr-1.5">Flash</span>
-          <span className="font-semibold">{current.title}</span> — {current.message}
-        </p>
-
-        {visible.length > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={() => setIndex((i) => (i + 1) % visible.length)}
-              aria-label="Next update"
-              className="hidden sm:block shrink-0 hover:opacity-70 transition-opacity"
-            >
-              <ChevronRight className="size-4" />
-            </button>
-            <div className="hidden sm:flex items-center gap-1 shrink-0">
-              {visible.map((f, i) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setIndex(i)}
-                  aria-label={`Show update ${i + 1}`}
-                  className={`size-1.5 rounded-full transition-colors ${i === index ? "bg-oroko-black" : "bg-oroko-black/30"}`}
-                />
-              ))}
-            </div>
-          </>
-        )}
+            {renderTrack("a")}
+            <span aria-hidden className="flex">{renderTrack("b")}</span>
+          </div>
+        </div>
 
         <button
           type="button"
-          onClick={dismissCurrent}
+          onClick={(e) => { e.stopPropagation(); dismiss(); }}
           aria-label="Dismiss"
           className="shrink-0 hover:opacity-70 transition-opacity"
         >
@@ -112,4 +78,5 @@ export function NewsFlashBannerClient({ flashes }: { flashes: ActiveNewsFlash[] 
     </div>
   );
 }
+
 
