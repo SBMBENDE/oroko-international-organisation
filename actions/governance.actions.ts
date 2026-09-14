@@ -7,13 +7,14 @@ import GovernanceMeeting from "@/models/GovernanceMeeting";
 import GovernanceDocument from "@/models/GovernanceDocument";
 import { meetingSchema, documentSchema } from "@/lib/validations/governance";
 import { requirePermission, PERMISSIONS } from "@/lib/permissions";
+import { logAudit } from "@/lib/audit";
 import { Types } from "mongoose";
 import type { ActionResult } from "@/types";
 
-async function getSessionRole(): Promise<string> {
+async function getSessionActor(): Promise<{ id: string; name: string; role: string }> {
   const session = await auth();
   if (!session?.user) throw new Error("Unauthorized");
-  return session.user.role ?? "member";
+  return { id: session.user.id, name: session.user.name ?? "Administrator", role: session.user.role ?? "member" };
 }
 
 export async function createMeeting(data: unknown): Promise<ActionResult & { id?: string }> {
@@ -23,8 +24,8 @@ export async function createMeeting(data: unknown): Promise<ActionResult & { id?
   }
 
   try {
-    const role = await getSessionRole();
-    requirePermission(role, PERMISSIONS.GOVERNANCE_MANAGE);
+    const actor = await getSessionActor();
+    requirePermission(actor.role, PERMISSIONS.GOVERNANCE_MANAGE);
     await connectDB();
 
     const { committeeId, date, endDate, ...rest } = parsed.data;
@@ -35,8 +36,15 @@ export async function createMeeting(data: unknown): Promise<ActionResult & { id?
       endDate: endDate ? new Date(endDate) : undefined,
     });
 
+    await logAudit({
+      actorId: actor.id, actorName: actor.name,
+      action: "meeting.created", entityType: "GovernanceMeeting", entityId: meeting._id.toString(),
+      description: `Created session "${meeting.title}"`,
+    });
+
     revalidatePath("/governance");
     revalidatePath("/portal/governance");
+    revalidatePath("/admin/meetings");
     return { success: true, id: meeting._id.toString() };
   } catch (err) {
     console.error("[createMeeting]", err);
@@ -55,8 +63,8 @@ export async function updateMeeting(
   }
 
   try {
-    const role = await getSessionRole();
-    requirePermission(role, PERMISSIONS.GOVERNANCE_MANAGE);
+    const actor = await getSessionActor();
+    requirePermission(actor.role, PERMISSIONS.GOVERNANCE_MANAGE);
     await connectDB();
 
     const { committeeId, date, endDate, ...rest } = parsed.data;
@@ -74,13 +82,70 @@ export async function updateMeeting(
 
     if (!updated) return { success: false, error: "Meeting not found" };
 
+    await logAudit({
+      actorId: actor.id, actorName: actor.name,
+      action: "meeting.updated", entityType: "GovernanceMeeting", entityId: id,
+      description: `Updated session "${updated.title}"`,
+    });
+
     revalidatePath("/governance");
     revalidatePath("/portal/governance");
+    revalidatePath("/admin/meetings");
     return { success: true };
   } catch (err) {
     console.error("[updateMeeting]", err);
     const message = err instanceof Error ? err.message : "Failed to update meeting";
     return { success: false, error: message };
+  }
+}
+
+export async function deleteMeeting(id: string): Promise<ActionResult> {
+  try {
+    const actor = await getSessionActor();
+    requirePermission(actor.role, PERMISSIONS.GOVERNANCE_MANAGE);
+    await connectDB();
+
+    const deleted = await GovernanceMeeting.findByIdAndDelete(id);
+    if (!deleted) return { success: false, error: "Meeting not found" };
+
+    await logAudit({
+      actorId: actor.id, actorName: actor.name,
+      action: "meeting.deleted", entityType: "GovernanceMeeting", entityId: id,
+      description: `Deleted session "${deleted.title}"`,
+    });
+
+    revalidatePath("/governance");
+    revalidatePath("/portal/governance");
+    revalidatePath("/admin/meetings");
+    return { success: true };
+  } catch (err) {
+    console.error("[deleteMeeting]", err);
+    return { success: false, error: err instanceof Error ? err.message : "Failed to delete meeting" };
+  }
+}
+
+export async function toggleMeetingPublished(id: string, isPublic: boolean): Promise<ActionResult> {
+  try {
+    const actor = await getSessionActor();
+    requirePermission(actor.role, PERMISSIONS.GOVERNANCE_MANAGE);
+    await connectDB();
+
+    const updated = await GovernanceMeeting.findByIdAndUpdate(id, { $set: { isPublic } });
+    if (!updated) return { success: false, error: "Meeting not found" };
+
+    await logAudit({
+      actorId: actor.id, actorName: actor.name,
+      action: "meeting.visibility_changed", entityType: "GovernanceMeeting", entityId: id,
+      description: `${isPublic ? "Published" : "Unpublished"} session "${updated.title}"`,
+    });
+
+    revalidatePath("/governance");
+    revalidatePath("/portal/governance");
+    revalidatePath("/admin/meetings");
+    return { success: true };
+  } catch (err) {
+    console.error("[toggleMeetingPublished]", err);
+    return { success: false, error: err instanceof Error ? err.message : "Failed to update meeting" };
   }
 }
 
@@ -91,8 +156,8 @@ export async function createDocument(data: unknown): Promise<ActionResult & { id
   }
 
   try {
-    const role = await getSessionRole();
-    requirePermission(role, PERMISSIONS.DOCUMENTS_MANAGE);
+    const actor = await getSessionActor();
+    requirePermission(actor.role, PERMISSIONS.DOCUMENTS_MANAGE);
     await connectDB();
 
     const { committeeId, meetingId, adoptedAt, ...rest } = parsed.data;
