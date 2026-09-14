@@ -24,8 +24,15 @@ function extractUploadUrl(result: any): string | undefined {
 }
 
 const TYPES = ["constitution", "bylaw", "policy", "report", "minutes", "form", "financial", "committee_document", "resolution", "decision", "agenda", "statute", "other"];
+const ORGANS = [
+  { value: "general_assembly", label: "General Assembly" },
+  { value: "executive", label: "Executive" },
+  { value: "committee", label: "Committee" },
+];
 
-export function DocumentFormDialog() {
+type Props = { committees?: { id: string; name: string }[] };
+
+export function DocumentFormDialog({ committees = [] }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -33,6 +40,8 @@ export function DocumentFormDialog() {
   const [summary, setSummary] = useState("");
   const [attachmentUrl, setAttachmentUrl] = useState("");
   const [isPublic, setIsPublic] = useState(true);
+  const [organ, setOrgan] = useState("general_assembly");
+  const [committeeId, setCommitteeId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
@@ -41,10 +50,10 @@ export function DocumentFormDialog() {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
-    const result = await uploadDocument({ title, type, summary, attachmentUrl, isPublic });
+    const result = await uploadDocument({ title, type, summary, attachmentUrl, isPublic, organ, committeeId });
     setIsSubmitting(false);
     if (!result.success) { setError(result.error ?? "Failed"); return; }
-    setTitle(""); setSummary(""); setAttachmentUrl("");
+    setTitle(""); setSummary(""); setAttachmentUrl(""); setCommitteeId("");
     setOpen(false);
     router.refresh();
   }
@@ -71,6 +80,26 @@ export function DocumentFormDialog() {
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-1.5">
+            <Label>Publish under</Label>
+            <Select value={organ} onValueChange={(v) => setOrgan(v ?? "general_assembly")}>
+              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {ORGANS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          {organ === "committee" && (
+            <div className="space-y-1.5">
+              <Label>Committee</Label>
+              <Select value={committeeId} onValueChange={(v) => setCommitteeId(v ?? "")}>
+                <SelectTrigger className="w-full"><SelectValue placeholder="Select committee" /></SelectTrigger>
+                <SelectContent>
+                  {committees.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div className="space-y-1.5">
             <Label htmlFor="d-summary">Summary (optional)</Label>
             <Textarea id="d-summary" value={summary} onChange={(e) => setSummary(e.target.value)} rows={2} />

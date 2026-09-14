@@ -15,6 +15,8 @@ const schema = z.object({
   summary: z.string().max(500).optional().or(z.literal("")),
   attachmentUrl: z.string().min(1, "A file URL is required").max(500),
   isPublic: z.boolean(),
+  organ: z.enum(["general_assembly", "executive", "committee"]),
+  committeeId: z.string().optional().or(z.literal("")),
 });
 
 export async function uploadDocument(data: unknown): Promise<ActionResult> {
@@ -25,7 +27,11 @@ export async function uploadDocument(data: unknown): Promise<ActionResult> {
     const admin = await requireAdminSession(PERMISSIONS.DOCUMENTS_MANAGE);
     await connectDB();
 
-    const doc = await GovernanceDocument.create({ ...parsed.data, organ: "executive" });
+    const { committeeId, ...rest } = parsed.data;
+    const doc = await GovernanceDocument.create({
+      ...rest,
+      committee: rest.organ === "committee" && committeeId ? committeeId : undefined,
+    });
 
     await logAudit({
       actorId: admin.id, actorName: admin.name,
@@ -41,6 +47,37 @@ export async function uploadDocument(data: unknown): Promise<ActionResult> {
     return { success: false, error: err instanceof Error ? err.message : "Failed to upload document" };
   }
 }
+
+export async function updateDocumentOrgan(id: string, organ: string, committeeId?: string): Promise<ActionResult> {
+  const parsed = z.enum(["general_assembly", "executive", "committee"]).safeParse(organ);
+  if (!parsed.success) return { success: false, error: "Invalid organ" };
+
+  try {
+    const admin = await requireAdminSession(PERMISSIONS.DOCUMENTS_MANAGE);
+    await connectDB();
+
+    const doc = await GovernanceDocument.findByIdAndUpdate(
+      id,
+      { $set: { organ: parsed.data, committee: parsed.data === "committee" && committeeId ? committeeId : undefined } },
+      { new: true }
+    );
+    if (!doc) return { success: false, error: "Document not found" };
+
+    await logAudit({
+      actorId: admin.id, actorName: admin.name,
+      action: "document.organ_changed", entityType: "GovernanceDocument", entityId: id,
+      description: `Moved document "${doc.title}" to ${parsed.data.replace("_", " ")}`,
+    });
+
+    revalidatePath("/admin/documents");
+    revalidatePath("/governance");
+    return { success: true };
+  } catch (err) {
+    console.error("[updateDocumentOrgan]", err);
+    return { success: false, error: err instanceof Error ? err.message : "Failed to update document" };
+  }
+}
+
 
 export async function toggleDocumentPublished(id: string, isPublic: boolean): Promise<ActionResult> {
   try {
